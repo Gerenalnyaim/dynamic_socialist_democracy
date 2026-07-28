@@ -190,6 +190,7 @@ on-arrival: {!
     Q.adjustmentFactors_votes_spd = 1.0;
     Q.adjustmentFactors_votes_sapd = 1.0;
     Q.adjustmentFactors_votes_kpd = 1.0;
+    Q.adjustmentFactors_votes_pvl = 1.0;
     Q.adjustmentFactors_votes_z = 1.0;
     Q.adjustmentFactors_votes_ddp = 1.0;
     Q.adjustmentFactors_votes_dvp = 1.0;
@@ -203,6 +204,7 @@ on-arrival: {!
     Q.adjustmentFactors_spd = 1.0;
     Q.adjustmentFactors_sapd = 1.0;
     Q.adjustmentFactors_kpd = 1.0;
+    Q.adjustmentFactors_pvl = 1.0;
     Q.adjustmentFactors_z = 1.0;
     Q.adjustmentFactors_ddp = 1.0;
     Q.adjustmentFactors_dvp = 1.0;
@@ -286,6 +288,7 @@ on-arrival: {!
         Q.adjustmentFactors_votes_spd = 1.0*(1-Q.spd_boycott_efficacy);
         Q.adjustmentFactors_votes_sapd = 0.0;
         Q.adjustmentFactors_votes_kpd = 0.0;
+        Q.adjustmentFactors_votes_pvl = 0.0;
         Q.adjustmentFactors_votes_z = 1.0*(1-Q.z_boycott_efficacy);
         Q.adjustmentFactors_votes_ddp = 1.0*(1-Q.lib_boycott_efficacy);
         Q.adjustmentFactors_votes_dvp = 1.0*(1.2-Q.lib_boycott_efficacy);
@@ -1313,6 +1316,7 @@ var lippe_adjustment_factors = {
     spd: 1.32,
     sapd: 0.4,
     kpd: 0.91,
+    pvl: 0.10,
     ddp: 0.62,
     lvp: 1.15,
     z: 0.17,
@@ -1327,6 +1331,7 @@ var lippe_adjustment_factors = {
 Q.old_spd_lippe_elections_vote = Q.spd_votes * lippe_adjustment_factors.spd;
 Q.old_sapd_lippe_elections_vote = Q.sapd_votes * lippe_adjustment_factors.sapd;
 Q.old_kpd_lippe_elections_vote = Q.kpd_votes * lippe_adjustment_factors.kpd;
+Q.old_pvl_lippe_elections_vote = Q.kpd_votes * lippe_adjustment_factors.pvl;
 Q.old_ddp_lippe_elections_vote = Q.ddp_votes * lippe_adjustment_factors.ddp;
 Q.old_lvp_lippe_elections_vote = Q.lvp_votes * lippe_adjustment_factors.lvp;
 Q.old_z_lippe_elections_vote = Q.z_votes * lippe_adjustment_factors.z;
@@ -1391,6 +1396,15 @@ if (Q.sapd_r && Q.sapd_formed) {
         "legend": "SAPD",
         "name": "SAPD",
         "seats": Math.round(Q.sapd_r * Q.reichstag_size),
+    });
+}
+
+if (Q.pvl_r) {
+    data.push({
+        "id": "pvl",
+        "legend": "PVL",
+        "name": "PVL",
+        "seats": Math.round(Q.pvl_r * Q.reichstag_size),
     });
 }
 
@@ -1660,8 +1674,8 @@ if (window && d3) {
 
     var lines = d3.linegraph(false, false,
             Q.parties_graph,
-            {'spd': '#E3000F', 'kpd': '#700000', 'ddp': '#D3C24D', 'z': '#000', 'dvp': '#D5AC27', 'dnvp': '#3E88B3', 'nsdap': '#7A3C00', 'other': '#a0a0a0', 'sapd': '#9B0000', 'dnf': '#003755', 'kvp': '#0087DC', 'lvp': '#FFCC00', 'dnef': '#BFC8CC', 'fkp': '#00C0FF'},
-            {'spd': 'SPD', 'kpd': 'KPD', 'ddp': Q.ddp_name, 'z': Q.z_party_name + ' + BVP', 'dvp': 'DVP', 'dnvp': 'DNVP', 'nsdap': 'NSDAP', 'other': 'Others', 'sapd': 'SAPD', 'dnf': 'DNF', 'kvp': 'KVP', 'lvp': 'LVP', 'dnef': 'DNEF', 'fkp': 'FKP'});
+            {'spd': '#E3000F', 'kpd': '#700000', 'pvl': '#940a2d', 'ddp': '#D3C24D', 'z': '#000', 'dvp': '#D5AC27', 'dnvp': '#3E88B3', 'nsdap': '#7A3C00', 'other': '#a0a0a0', 'sapd': '#9B0000', 'dnf': '#003755', 'kvp': '#0087DC', 'lvp': '#FFCC00', 'dnef': '#BFC8CC', 'fkp': '#00C0FF'},
+            {'spd': 'SPD', 'kpd': 'KPD', 'pvl': 'PVL', 'ddp': Q.ddp_name, 'z': Q.z_party_name + ' + BVP', 'dvp': 'DVP', 'dnvp': 'DNVP', 'nsdap': 'NSDAP', 'other': 'Others', 'sapd': 'SAPD', 'dnf': 'DNF', 'kvp': 'KVP', 'lvp': 'LVP', 'dnef': 'DNEF', 'fkp': 'FKP'});
     lines.width(width).height(400);
     //var svg = lines(Q.election_records);
     d3.select("#election_history").datum(Q.election_records).call(lines);
@@ -1671,8 +1685,8 @@ if (window && d3) {
     if (!Q.historical_mode) {
         var lines_2 = d3.linegraph(true, true,
             Q.parties_graph,
-            {'spd': '#E3000F', 'kpd': '#700000', 'ddp': '#D3C24D', 'z': '#000', 'dvp': '#D5AC27', 'dnvp': '#3E88B3', 'nsdap': '#7A3C00', 'other': '#a0a0a0', 'sapd': '#9B0000', 'dnf': '#003755', 'kvp': '#0087DC', 'lvp': '#FFCC00', 'dnef': '#BFC8CC', 'fkp': '#00C0FF'},
-            {'spd': 'SPD', 'kpd': 'KPD', 'ddp': Q.ddp_name, 'z': Q.z_party_name + ' + BVP', 'dvp': 'DVP', 'dnvp': 'DNVP', 'nsdap': 'NSDAP', 'other': 'Others', 'sapd': 'SAPD', 'dnf': 'DNF', 'kvp': 'KVP', 'lvp': 'LVP', 'dnef': 'DNEF', 'fkp': 'FKP'});
+            {'spd': '#E3000F', 'kpd': '#700000', 'pvl': '#940a2d', 'ddp': '#D3C24D', 'z': '#000', 'dvp': '#D5AC27', 'dnvp': '#3E88B3', 'nsdap': '#7A3C00', 'other': '#a0a0a0', 'sapd': '#9B0000', 'dnf': '#003755', 'kvp': '#0087DC', 'lvp': '#FFCC00', 'dnef': '#BFC8CC', 'fkp': '#00C0FF'},
+            {'spd': 'SPD', 'kpd': 'KPD', 'pvl': 'PVL', 'ddp': Q.ddp_name, 'z': Q.z_party_name + ' + BVP', 'dvp': 'DVP', 'dnvp': 'DNVP', 'nsdap': 'NSDAP', 'other': 'Others', 'sapd': 'SAPD', 'dnf': 'DNF', 'kvp': 'KVP', 'lvp': 'LVP', 'dnef': 'DNEF', 'fkp': 'FKP'});
         lines_2.width(width).height(400);
         d3.select("#party_support_history").datum(Q.party_support_records).call(lines_2);
     }
