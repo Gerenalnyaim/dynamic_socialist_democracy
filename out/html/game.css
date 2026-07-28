@@ -699,6 +699,10 @@ th {
   fill: #700000;
 }
 
+.seat.pvl {
+  fill: #940a2d;
+}
+
 .seat.spd {
   fill: #E3000F;
   stroke: var(--border-color);
